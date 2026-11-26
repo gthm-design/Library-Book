@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Library Management System</title>
+  <style>
+    :root {
+      --bg-page: #F5F6F8;
+      --bg-surface: #FFFFFF;
+      --color-primary: #263B5A;
+      --color-primary-hover: #1D2E47;
+      --color-secondary: #64748B;
+      --color-success: #198754;
+      --color-danger: #DC3545;
+      --color-issued: #0D6EFD;
+      --color-border: #DEE2E6;
+      --color-text: #212529;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+      background-color: var(--bg-page);
+      color: var(--color-text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Navigation */
+    .navbar {
+      background-color: var(--color-primary);
+      color: #FFFFFF;
+      border-bottom: 1px solid #1C2D46;
+    }
+
+    .navbar-container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      min-height: 56px;
+    }
+
+    .navbar-brand {
+      font-size: 18px;
+      font-weight: 700;
+      padding: 12px 0;
+      cursor: pointer;
+    }
+
+    .navbar-toggle {
+      display: none;
+      background: transparent;
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 3px;
+      padding: 5px 10px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: #E2E8F0;
+      font-family: inherit;
+      font-size: 14px;
+      padding: 8px 14px;
+      border-radius: 3px;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .nav-btn:hover {
+      background-color: rgba(255, 255, 255, 0.12);
+      color: #FFFFFF;
+    }
+
+    .nav-btn.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    /* Main Layout */
+    .main-container {
+      max-width: 1180px;
+      margin: 24px auto;
+      padding: 0 20px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    .section-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 3px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--color-text);
+    }
+
+    /* Dashboard Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 3px;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--color-secondary);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    .stat-value.danger-text {
+      color: var(--color-danger);
+    }
+
+    .stat-icon {
+      color: var(--color-primary);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      border-radius: 3px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background-color: var(--color-primary);
+      color: #FFFFFF;
+      border-color: var(--color-primary);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--color-primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: #FFFFFF;
+      color: var(--color-text);
+      border-color: var(--color-border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #F1F3F5;
+    }
+
+    .btn-outline-danger {
+      background-color: #FFFFFF;
+      color: var(--color-danger);
+      border-color: var(--color-danger);
+    }
+
+    .btn-outline-danger:hover:not(:disabled) {
+      background-color: var(--color-danger);
+      color: #FFFFFF;
+    }
+
+    .btn-sm {
+      padding: 4px 9px;
+      font-size: 12px;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .filter-input {
+      flex: 1 1 240px;
+      min-width: 180px;
+    }
+
+    .filter-select {
+      flex: 0 1 190px;
+      min-width: 150px;
+    }
+
+    .checkbox-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 14px;
+      color: var(--color-text);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Tables */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--color-border);
+      border-radius: 3px;
+      background-color: var(--bg-surface);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      min-width: 680px;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+
+    .data-table th {
+      background-color: #F8F9FA;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--color-text);
+      border-bottom: 2px solid var(--color-border);
+      white-space: nowrap;
+    }
+
+    .data-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tbody tr:hover {
+      background-color: #FAFBFD;
+    }
+
+    .table-actions {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 6px;
+    }
+
+    .copies-zero {
+      color: var(--color-danger);
+      font-weight: 700;
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    .status-issued {
+      background-color: #E7F1FF;
+      color: var(--color-issued);
+      border: 1px solid #B6D4FE;
+    }
+
+    .status-returned {
+      background-color: #E8F5EE;
+      color: var(--color-success);
+      border: 1px solid #BADBCC;
+    }
+
+    .status-overdue {
+      background-color: #FBE9EB;
+      color: var(--color-danger);
+      border: 1px solid #F5C2C7;
+    }
+
+    /* Pagination */
+    .pagination-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--color-secondary);
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Forms */
+    .form-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 3px;
+      padding: 22px;
+      max-width: 640px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: var(--color-text);
+      font-size: 14px;
+    }
+
+    .required-mark {
+      color: var(--color-danger);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--color-text);
+      background-color: #FFFFFF;
+      border: 1px solid var(--color-border);
+      border-radius: 3px;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field-error {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--color-danger);
+    }
+
+    .form-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    /* Alerts & Details */
+    .alert {
+      padding: 10px 14px;
+      border-radius: 3px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      border: 1px solid transparent;
+    }
+
+    .alert-error {
+      background-color: #FBE9EB;
+      color: #842029;
+      border-color: #F5C2C7;
+    }
+
+    .alert-success {
+      background-color: #E8F5EE;
+      color: #0F5132;
+      border-color: #BADBCC;
+    }
+
+    .empty-state {
+      padding: 26px 16px;
+      text-align: center;
+      color: var(--color-secondary);
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+    }
+
+    .detail-item-label {
+      font-size: 12px;
+      color: var(--color-secondary);
+      margin-bottom: 3px;
+    }
+
+    .detail-item-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .info-box {
+      background-color: #F8F9FA;
+      border: 1px solid var(--color-border);
+      border-radius: 3px;
+      padding: 12px 14px;
+      margin-bottom: 18px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar-toggle {
+        display: block;
+      }
+
+      .navbar-links {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        padding-bottom: 12px;
+        gap: 4px;
+      }
+
+      .navbar-links.open {
+        display: flex;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .main-container {
+        margin: 16px auto;
+        padding: 0 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-card,
+      .section-card {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand" id="brandLink">Library Management System</div>
+      <button type="button" class="navbar-toggle" id="navToggle" aria-expanded="false">Menu</button>
+      <ul class="navbar-links" id="navLinks">
+        <li><button type="button" class="nav-btn" data-route="dashboard">Dashboard</button></li>
+        <li><button type="button" class="nav-btn" data-route="books">Books</button></li>
+        <li><button type="button" class="nav-btn" data-route="add-book">Add Book</button></li>
+        <li><button type="button" class="nav-btn" data-route="loans">Loan History</button></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="main-container" id="app"></main>
+
+  <script>
+    (function () {
+      const STORAGE_KEYS = {
+        books: 'lms_books_v1',
+        loans: 'lms_loans_v1'
+      };
+
+      const CATEGORIES = [
+        'Computer Science',
+        'Mathematics',
+        'Physics',
+        'Engineering',
+        'Literature',
+        'History',
+        'Business',
+        'General'
+      ];
+
+      const FINE_PER_DAY = 1;
+      const PAGE_SIZE = 10;
+
+      const state = {
+        route: 'dashboard',
+        selectedId: null,
+        booksSearch: '',
+        booksCategory: 'All',
+        booksAvailableOnly: false,
+        booksPage: 1,
+        loansSearch: '',
+        loansStatus: 'All',
+        loansPage: 1,
+        flashMessage: '',
+        flashType: 'success'
+      };
+
+      function loadData(key) {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : [];
+        } catch (err) {
+          return [];
+        }
+      }
+
+      function saveData(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+
+      function generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      }
+
+      function escapeHtml(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function getTodayStr() {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      function getDatePlusDaysStr(days) {
+        const date = new Date();
+        date.setDate(date.getDate() + days);
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      function toUtcDayStartMs(dateStr) {
+        if (!dateStr) return 0;
+        const parts = dateStr.split('-').map(Number);
+        return Date.UTC(parts[0], parts[1] - 1, parts[2]);
+      }
+
+      function getOverdueDays(dueDateStr, refDateStr = getTodayStr()) {
+        const msPerDay = 24 * 60 * 60 * 1000;
+        const diff = Math.floor((toUtcDayStartMs(refDateStr) - toUtcDayStartMs(dueDateStr)) / msPerDay);
+        return diff > 0 ? diff : 0;
+      }
+
+      function getLoanDisplayStatus(loan) {
+        if (loan.status === 'Returned') return 'Returned';
+        return getOverdueDays(loan.dueDate) > 0 ? 'Overdue' : 'Issued';
+      }
+
+      function getStatusClass(displayStatus) {
+        if (displayStatus === 'Returned') return 'status-badge status-returned';
+        if (displayStatus === 'Overdue') return 'status-badge status-overdue';
+        return 'status-badge status-issued';
+      }
+
+      function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        const ms = toUtcDayStartMs(dateStr);
+        if (!ms) return '-';
+        return new Date(ms).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          timeZone: 'UTC'
+        });
+      }
+
+      function formatCurrency(val) {
+        return '$' + Number(val || 0).toFixed(2);
+      }
+
+      function navigate(route, id = null, clearFlash = true) {
+        state.route = route;
+        state.selectedId = id;
+        if (clearFlash) {
+          state.flashMessage = '';
+        }
+        document.getElementById('navLinks').classList.remove('open');
+        document.getElementById('navToggle').setAttribute('aria-expanded', 'false');
+        render();
+      }
+
+      function updateNavHighlight() {
+        const buttons = document.querySelectorAll('.nav-btn');
+        buttons.forEach((btn) => {
+          const target = btn.getAttribute('data-route');
+          const isBooksSub =
+            target === 'books' &&
+            ['books', 'view-book', 'edit-book', 'issue-book'].includes(state.route);
+          const isLoansSub =
+            target === 'loans' && ['loans', 'return-book'].includes(state.route);
+          btn.classList.toggle('active', target === state.route || isBooksSub || isLoansSub);
+        });
+      }
+
+      function renderDashboard() {
+        const books = loadData(STORAGE_KEYS.books);
+        const loans = loadData(STORAGE_KEYS.loans);
+
+        const totalBooks = books.length;
+        const totalCopies = books.reduce((sum, b) => sum + Number(b.totalCopies || 0), 0);
+        const activeLoans = loans.filter((l) => l.status === 'Issued');
+        const issuedCopies = activeLoans.length;
+        const overdueBooks = activeLoans.filter((l) => getLoanDisplayStatus(l) === 'Overdue').length;
+        const totalFineCollected = loans
+          .filter((l) => l.status === 'Returned')
+          .reduce((sum, l) => sum + Number(l.fineAmount || 0), 0);
+
+        const recentLoans = [...loans]
+          .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
+          .slice(0, 8);
+
+        const rowsHtml =
+          recentLoans.length === 0
+            ? `<tr><td colspan="6" class="empty-state">No books have been issued yet.</td></tr>`
+            : recentLoans
+                .map((loan) => {
+                  const status = getLoanDisplayStatus(loan);
+                  return `
+                    <tr>
+                      <td>${escapeHtml(loan.bookCode)}</td>
+                      <td>${escapeHtml(loan.bookTitle)}</td>
+                      <td>${escapeHtml(loan.borrowerName)}</td>
+                      <td>${formatDate(loan.issueDate)}</td>
+                      <td>${formatDate(loan.dueDate)}</td>
+                      <td><span class="${getStatusClass(status)}">${status}</span></td>
+                    </tr>
+                  `;
+                })
+                .join('');
+
+        return `
+          <div class="page-header">
+            <h1 class="page-title">Dashboard</h1>
+            <button type="button" class="btn btn-primary" data-nav="books">Browse Books</button>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div>
+                <div class="stat-label">Total Books</div>
+                <div class="stat-value">${totalBooks}</div>
+              </div>
+              <svg class="stat-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              </svg>
+            </div>
+
+            <div class="stat-card">
+              <div>
+                <div class="stat-label">Total Copies</div>
+                <div class="stat-value">${totalCopies}</div>
+              </div>
+              <svg class="stat-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="4" y="4" width="14" height="16" rx="1" />
+                <path d="M8 2h12v16" />
+              </svg>
+            </div>
+
+            <div class="stat-card">
+              <div>
+                <div class="stat-label">Issued Copies</div>
+                <div class="stat-value">${issuedCopies}</div>
+              </div>
+              <svg class="stat-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M16 3h5v5" />
+                <path d="M21 3l-7 7" />
+                <path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" />
+              </svg>
+            </div>
+
+            <div class="stat-card">
+              <div>
+                <div class="stat-label">Overdue Books</div>
+                <div class="stat-value ${overdueBooks > 0 ? 'danger-text' : ''}">${overdueBooks}</div>
+              </div>
+              <svg class="stat-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 2" />
+              </svg>
+            </div>
+
+            <div class="stat-card">
+              <div>
+                <div class="stat-label">Total Fine Collected</div>
+                <div class="stat-value">${formatCurrency(totalFineCollected)}</div>
+              </div>
+              <svg class="stat-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M14.5 9a2.5 2.5 0 0 0-5 0c0 1.5 2.5 2 2.5 2s2.5.5 2.5 2a2.5 2.5 0 0 1-5 0" />
+                <path d="M12 6v12" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <div class="page-header" style="margin-bottom: 12px;">
+              <h2 class="section-title" style="margin-bottom: 0;">Recently Issued Books</h2>
+              <button type="button" class="btn btn-secondary btn-sm" data-nav="loans">View All Loans</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Book Code</th>
+                    <th>Title</th>
+                    <th>Borrower</th>
+                    <th>Issue Date</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderBooks() {
+        const books = loadData(STORAGE_KEYS.books);
+        const searchTerm = state.booksSearch.trim().toLowerCase();
+
+        const filtered = books.filter((book) => {
+          const matchesSearch =
+            !searchTerm ||
+            book.bookCode.toLowerCase().includes(searchTerm) ||
+            book.title.toLowerCase().includes(searchTerm) ||
+            book.author.toLowerCase().includes(searchTerm);
+          const matchesCategory =
+            state.booksCategory === 'All' || book.category === state.booksCategory;
+          const matchesAvailable = !state.booksAvailableOnly || book.availableCopies > 0;
+          return matchesSearch && matchesCategory && matchesAvailable;
+        });
+
+        const total = filtered.length;
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        if (state.booksPage > totalPages) state.booksPage = totalPages;
+
+        const startIdx = (state.booksPage - 1) * PAGE_SIZE;
+        const pageItems = filtered.slice(startIdx, startIdx + PAGE_SIZE);
+        const startItem = total === 0 ? 0 : startIdx + 1;
+        const endItem = Math.min(startIdx + PAGE_SIZE, total);
+
+        const allCats = Array.from(new Set([...CATEGORIES, ...books.map((b) => b.category)])).sort();
+
+        const rowsHtml =
+          pageItems.length === 0
+            ? `<tr><td colspan="6" class="empty-state">No books found.</td></tr>`
+            : pageItems
+                .map((book) => {
+                  const availClass = book.availableCopies === 0 ? 'copies-zero' : '';
+                  const issueBtn =
+                    book.availableCopies > 0
+                      ? `<button type="button" class="btn btn-primary btn-sm" data-action="issue-book" data-id="${book.id}">Issue</button>`
+                      : `<button type="button" class="btn btn-primary btn-sm" disabled>Issue</button>`;
+                  return `
+                    <tr>
+                      <td>${escapeHtml(book.bookCode)}</td>
+                      <td>${escapeHtml(book.title)}</td>
+                      <td>${escapeHtml(book.author)}</td>
+                      <td>${escapeHtml(book.category)}</td>
+                      <td><span class="${availClass}">${book.availableCopies}</span> / ${book.totalCopies}</td>
+                      <td>
+                        <div class="table-actions">
+                          <button type="button" class="btn btn-secondary btn-sm" data-action="view-book" data-id="${book.id}">View</button>
+                          <button type="button" class="btn btn-secondary btn-sm" data-action="edit-book" data-id="${book.id}">Edit</button>
+                          ${issueBtn}
+                          <button type="button" class="btn btn-outline-danger btn-sm" data-action="delete-book" data-id="${book.id}">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                })
+                .join('');
+
+        return `
+          <div class="page-header">
+            <h1 class="page-title">Books</h1>
+            <button type="button" class="btn btn-primary" data-nav="add-book">Add Book</button>
+          </div>
+
+          ${state.flashMessage ? `<div class="alert alert-${state.flashType}">${escapeHtml(state.flashMessage)}</div>` : ''}
+
+          <div class="section-card">
+            <div class="filter-bar">
+              <input
+                type="text"
+                id="booksSearchInput"
+                class="form-control filter-input"
+                placeholder="Search by book code, title, or author..."
+                value="${escapeHtml(state.booksSearch)}"
+              />
+
+              <select id="booksCategorySelect" class="form-control filter-select">
+                <option value="All">All Categories</option>
+                ${allCats
+                  .map(
+                    (cat) =>
+                      `<option value="${escapeHtml(cat)}" ${state.booksCategory === cat ? 'selected' : ''}>${escapeHtml(cat)}</option>`
+                  )
+                  .join('')}
+              </select>
+
+              <label class="checkbox-label">
+                <input type="checkbox" id="booksAvailableCheck" ${state.booksAvailableOnly ? 'checked' : ''} />
+                Available Only
+              </label>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Book Code</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Category</th>
+                    <th>Available / Total</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+              </table>
+            </div>
+
+            <div class="pagination-bar">
+              <span>Showing ${startItem} to ${endItem} of ${total} books</span>
+              <div class="pagination-controls">
+                <button type="button" class="btn btn-secondary btn-sm" id="booksPrevBtn" ${state.booksPage <= 1 ? 'disabled' : ''}>Previous</button>
+                <span>Page ${state.booksPage} of ${totalPages}</span>
+                <button type="button" class="btn btn-secondary btn-sm" id="booksNextBtn" ${state.booksPage >= totalPages ? 'disabled' : ''}>Next</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderBookForm(book = null) {
+        const isEdit = Boolean(book);
+        const titleText = isEdit ? 'Edit Book' : 'Add Book';
+        const submitText = isEdit ? 'Save Changes' : 'Save Book';
+        const selectedCategory = book ? book.category : '';
+
+        return `
+          <div class="page-header">
+            <h1 class="page-title">${titleText}</h1>
+          </div>
+
+          <form class="form-card" id="bookForm" novalidate>
+            <div id="bookFormServerError"></div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="bookCode" class="form-label">Book Code <span class="required-mark">*</span></label>
+                <input id="bookCode" type="text" class="form-control" placeholder="e.g. CS-101" value="${escapeHtml(book ? book.bookCode : '')}" />
+                <p class="field-error" id="err-bookCode"></p>
+              </div>
+
+              <div class="form-group">
+                <label for="category" class="form-label">Category <span class="required-mark">*</span></label>
+                <select id="category" class="form-control">
+                  <option value="">Select category</option>
+                  ${CATEGORIES.map(
+                    (cat) =>
+                      `<option value="${escapeHtml(cat)}" ${selectedCategory === cat ? 'selected' : ''}>${escapeHtml(cat)}</option>`
+                  ).join('')}
+                </select>
+                <p class="field-error" id="err-category"></p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="title" class="form-label">Book Title <span class="required-mark">*</span></label>
+              <input id="title" type="text" class="form-control" placeholder="Enter book title" value="${escapeHtml(book ? book.title : '')}" />
+              <p class="field-error" id="err-title"></p>
+            </div>
+
+            <div class="form-group">
+              <label for="author" class="form-label">Author <span class="required-mark">*</span></label>
+              <input id="author" type="text" class="form-control" placeholder="Enter author name" value="${escapeHtml(book ? book.author : '')}" />
+              <p class="field-error" id="err-author"></p>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="totalCopies" class="form-label">Total Copies <span class="required-mark">*</span></label>
+                <input id="totalCopies" type="number" min="1" step="1" class="form-control" value="${book ? book.totalCopies : 1}" />
+                <p class="field-error" id="err-totalCopies"></p>
+              </div>
+
+              <div class="form-group">
+                <label for="isbn" class="form-label">ISBN (Optional)</label>
+                <input id="isbn" type="text" class="form-control" placeholder="e.g. 978-0132350884" value="${escapeHtml(book ? book.isbn : '')}" />
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">${submitText}</button>
+              <button type="button" class="btn btn-secondary" data-nav="books">Cancel</button>
+            </div>
+          </form>
+        `;
+      }
+
+      function renderViewBook() {
+        const books = loadData(STORAGE_KEYS.books);
+        const loans = loadData(STORAGE_KEYS.loans);
+        const book = books.find((b) => b.id === state.selectedId);
+
+        if (!book) {
+          return `
+            <div class="alert alert-error">Book not found.</div>
+            <button type="button" class="btn btn-secondary" data-nav="books">Back to Books</button>
+          `;
+        }
+
+        const bookLoans = loans
+          .filter((l) => l.bookId === book.id)
+          .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+
+        const loanRows =
+          bookLoans.length === 0
+            ? `<tr><td colspan="8" class="empty-state">No loan records for this book.</td></tr>`
+            : bookLoans
+                .map((loan) => {
+                  const status = getLoanDisplayStatus(loan);
+                  return `
+                    <tr>
+                      <td>${escapeHtml(loan.borrowerName)}</td>
+                      <td>${escapeHtml(loan.borrowerId)}</td>
+                      <td>${formatDate(loan.issueDate)}</td>
+                      <td>${formatDate(loan.dueDate)}</td>
+                      <td>${formatDate(loan.returnDate)}</td>
+                      <td>${formatCurrency(loan.fineAmount)}</td>
+                      <td><span class="${getStatusClass(status)}">${status}</span></td>
+                      <td>
+                        ${
+                          loan.status === 'Issued'
+                            ? `<button type="button" class="btn btn-primary btn-sm" data-action="return-loan" data-id="${loan.id}">Return</button>`
+                            : '-'
+                        }
+                      </td>
+                    </tr>
+                  `;
+                })
+                .join('');
+
+        return `
+          <div class="page-header">
+            <h1 class="page-title">${escapeHtml(book.title)}</h1>
+            <div class="table-actions">
+              <button type="button" class="btn btn-secondary" data-action="edit-book" data-id="${book.id}">Edit Book</button>
+              ${
+                book.availableCopies > 0
+                  ? `<button type="button" class="btn btn-primary" data-action="issue-book" data-id="${book.id}">Issue Book</button>`
+                  : `<button type="button" class="btn btn-primary" disabled>Issue Book</button>`
+              }
+              <button type="button" class="btn btn-secondary" data-nav="books">Back</button>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h2 class="section-title">Book Details</h2>
+            <div class="details-grid">
+              <div>
+                <div class="detail-item-label">Book Code</div>
+                <div class="detail-item-value">${escapeHtml(book.bookCode)}</div>
+              </div>
+              <div>
+                <div class="detail-item-label">Author</div>
+                <div class="detail-item-value">${escapeHtml(book.author)}</div>
+              </div>
+              <div>
+                <div class="detail-item-label">Category</div>
+                <div class="detail-item-value">${escapeHtml(book.category)}</div>
+              </div>
+              <div>
+                <div class="detail-item-label">ISBN</div>
+                <div class="detail-item-value">${escapeHtml(book.isbn || '-')}</div>
+              </div>
+              <div>
+                <div class="detail-item-label">Available / Total Copies</div>
+                <div class="detail-item-value">
+                  <span class="${book.availableCopies === 0 ? 'copies-zero' : ''}">${book.availableCopies}</span> / ${book.totalCopies}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card">
+            <h2 class="section-title">Loan Records for This Book</h2>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Borrower</th>
+                    <th>Borrower ID</th>
+                    <th>Issue Date</th>
+                    <th>Due Date</th>
+                    <th>Return Date</th>
+                    <th>Fine</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>${loanRows}</tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderIssueBook() {
+        const books = loadData(STORAGE_KEYS.books);
+        const book = books.find((b) => b.id === state.selectedId);
+
+        if (!book) {
+          return `
+            <div class="alert alert-error">Book not found.</div>
+            <button type="button" class="btn btn-secondary" data-nav="books">Back to Books</button>
+          `;
+        }
+
+        return `
+          <div class="page-header">
+            <h1 class="page-title">Issue Book</h1>
+          </div>
+
+          <form class="form-card" id="issueForm" novalidate>
+            <div class="info-box">
+              <div><strong>${escapeHtml(book.bookCode)}</strong> — ${escapeHtml(book.title)}</div>
+              <div style="font-size: 13px; color: #64748B; margin-top: 4px;">
+                Author: ${escapeHtml(book.author)} | Available Copies:
+                <span class="${book.availableCopies === 0 ? 'copies-zero' : ''}">${book.availableCopies}</span> / ${book.totalCopies}
+              </div>
+            </div>
+
+            ${book.availableCopies === 0 ? '<div class="alert alert-error">No copies are currently available to issue.</div>' : ''}
+            <div id="issueFormServerError"></div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="borrowerName" class="form-label">Borrower Name <span class="required-mark">*</span></label>
+                <input id="borrowerName" type="text" class="form-control" placeholder="Enter student or member name" />
+                <p class="field-error" id="err-borrowerName"></p>
+              </div>
+              <div class="form-group">
+                <label for="borrowerId" class="form-label">Borrower ID <span class="required-mark">*</span></label>
+                <input id="borrowerId" type="text" class="form-control" placeholder="e.g. STU-2026-014" />
+                <p class="field-error" id="err-borrowerId"></p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="borrowerPhone" class="form-label">Phone Number (Optional)</label>
+              <input id="borrowerPhone" type="text" class="form-control" placeholder="Enter phone number" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="issueDate" class="form-label">Issue Date <span class="required-mark">*</span></label>
+                <input id="issueDate" type="date" class="form-control" value="${getTodayStr()}" />
+                <p class="field-error" id="err-issueDate"></p>
+              </div>
+              <div class="form-group">
+                <label for="dueDate" class="form-label">Due Date <span class="required-mark">*</span></label>
+                <input id="dueDate" type="date" class="form-control" value="${getDatePlusDaysStr(14)}" />
+                <p class="field-error" id="err-dueDate"></p>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" ${book.availableCopies === 0 ? 'disabled' : ''}>Issue Book</button>
+              <button type="button" class="btn btn-secondary" data-nav="books">Cancel</button>
+            </div>
+          </form>
+        `;
+      }
+
+      function renderReturnBook() {
+        const loans = loadData(STORAGE_KEYS.loans);
+        const loan = loans.find((l) => l.id === state.selectedId);
+
+        if (!loan) {
+          return `
+            <div class="alert alert-error">Loan record not found.</div>
+            <button type="button" class="btn btn-secondary" data-nav="loans">Back to Loan History</button>
+          `;
+        }
+
+        const status = getLoanDisplayStatus(loan);
+        const overdueDays = loan.status === 'Issued' ? getOverdueDays(loan.dueDate) : 0;
+        const suggestedFine = overdueDays * FINE_PER_DAY;
+
+        return `
+          <div class="page-header">
+            <h1 class="page-title">Return Book</h1>
+          </div>
+
+          <form class="form-card" id="returnForm" novalidate>
+            <div class="info-box">
+              <div style="margin-bottom: 6px;"><strong>${escapeHtml(loan.bookCode)}</strong> — ${escapeHtml(loan.bookTitle)}</div>
+              <div style="font-size: 13px; color: #64748B;">Borrower: ${escapeHtml(loan.borrowerName)} (${escapeHtml(loan.borrowerId)})</div>
+              <div style="font-size: 13px; color: #64748B; margin-top: 4px;">
+                Issue Date: ${formatDate(loan.issueDate)} | Due Date: ${formatDate(loan.dueDate)} | Status:
+                <span class="${getStatusClass(status)}">${status}</span>
+              </div>
+              ${
+                overdueDays > 0
+                  ? `<div style="font-size: 13px; color: #DC3545; margin-top: 6px; font-weight: 600;">Overdue by ${overdueDays} day${overdueDays === 1 ? '' : 's'}.</div>`
+                  : ''
+              }
+            </div>
+
+            <div id="returnFormError"></div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="returnDate" class="form-label">Return Date <span class="required-mark">*</span></label>
+                <input id="returnDate" type="date" class="form-control" value="${getTodayStr()}" ${loan.status === 'Returned' ? 'disabled' : ''} />
+              </div>
+              <div class="form-group">
+                <label for="fineAmount" class="form-label">Fine Collected ($)</label>
+                <input id="fineAmount" type="number" min="0" step="0.5" class="form-control" value="${loan.status === 'Returned' ? loan.fineAmount : suggestedFine}" ${loan.status === 'Returned' ? 'disabled' : ''} />
+              </div>
+            </div>
+
+            <div class="form-actions">
+              ${loan.status === 'Issued' ? '<button type="submit" class="btn btn-primary">Confirm Return</button>' : ''}
+              <button type="button" class="btn btn-secondary" data-nav="loans">Cancel</button>
+            </div>
+          </form>
+        `;
+      }
+
+      function renderLoanHistory() {
+        const loans = loadData(STORAGE_KEYS.loans);
+        const searchTerm = state.loansSearch.trim().toLowerCase();
+
+        const filtered = [...loans]
+          .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
+          .filter((loan) => {
+            const displayStatus = getLoanDisplayStatus(loan);
+            const matchesSearch =
+              !searchTerm ||
+              loan.bookCode.toLowerCase().includes(searchTerm) ||
+              loan.bookTitle.toLowerCase().includes(searchTerm) ||
+              loan.borrowerName.toLowerCase().includes(searchTerm) ||
+              loan.borrowerId.toLowerCase().includes(searchTerm);
+            const matchesStatus = state.loansStatus === 'All' || displayStatus === state.loansStatus;
+            return matchesSearch && matchesStatus;
+          });
+
+        const total = filtered.length;
+        const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+        if (state.loansPage > totalPages) state.loansPage = totalPages;
+
+        const startIdx = (state.loansPage - 1) * PAGE_SIZE;
+        const pageItems = filtered.slice(startIdx, startIdx + PAGE_SIZE);
+        const startItem = total === 0 ? 0 : startIdx + 1;
+        const endItem = Math.min(startIdx + PAGE_SIZE, total);
+
+        const rowsHtml =
+          pageItems.length === 0
+            ? `<tr><td colspan="10" class="empty-state">No loan records found.</td></tr>`
+            : pageItems
+                .map((loan) => {
+                  const status = getLoanDisplayStatus(loan);
+                  return `
+                    <tr>
+                      <td>${escapeHtml(loan.bookCode)}</td>
+                      <td>${escapeHtml(loan.bookTitle)}</td>
+                      <td>${escapeHtml(loan.borrowerName)}</td>
+                      <td>${escapeHtml(loan.borrowerId)}</td>
+                      <td>${formatDate(loan.issueDate)}</td>
+                      <td>${formatDate(loan.dueDate)}</td>
+                      <td>${formatDate(loan.returnDate)}</td>
+                      <td>${formatCurrency(loan.fineAmount)}</td>
+                      <td><span class="${getStatusClass(status)}">${status}</span></td>
+                      <td>
+                        ${
+                          loan.status === 'Issued'
+                            ? `<button type="button" class="btn btn-primary btn-sm" data-action="return-loan" data-id="${loan.id}">Return</button>`
+                            : '-'
+                        }
+                      </td>
+                    </tr>
+                  `;
+                })
+                .join('');
+
+        return `
+          <div class="page-header">
+            <h1 class="page-title">Loan History</h1>
+            <button type="button" class="btn btn-primary" data-nav="books">Issue a Book</button>
+          </div>
+
+          ${state.flashMessage ? `<div class="alert alert-${state.flashType}">${escapeHtml(state.flashMessage)}</div>` : ''}
+
+          <div class="section-card">
+            <div class="filter-bar">
+              <input
+                type="text"
+                id="loansSearchInput"
+                class="form-control filter-input"
+                placeholder="Search by book code, title, borrower name, or ID..."
+                value="${escapeHtml(state.loansSearch)}"
+              />
+
+              <select id="loansStatusSelect" class="form-control filter-select">
+                <option value="All" ${state.loansStatus === 'All' ? 'selected' : ''}>All Statuses</option>
+                <option value="Issued" ${state.loansStatus === 'Issued' ? 'selected' : ''}>Issued</option>
+                <option value="Overdue" ${state.loansStatus === 'Overdue' ? 'selected' : ''}>Overdue</option>
+                <option value="Returned" ${state.loansStatus === 'Returned' ? 'selected' : ''}>Returned</option>
+              </select>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Book Code</th>
+                    <th>Title</th>
+                    <th>Borrower</th>
+                    <th>Borrower ID</th>
+                    <th>Issue Date</th>
+                    <th>Due Date</th>
+                    <th>Return Date</th>
+                    <th>Fine</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+              </table>
+            </div>
+
+            <div class="pagination-bar">
+              <span>Showing ${startItem} to ${endItem} of ${total} records</span>
+              <div class="pagination-controls">
+                <button type="button" class="btn btn-secondary btn-sm" id="loansPrevBtn" ${state.loansPage <= 1 ? 'disabled' : ''}>Previous</button>
+                <span>Page ${state.loansPage} of ${totalPages}</span>
+                <button type="button" class="btn btn-secondary btn-sm" id="loansNextBtn" ${state.loansPage >= totalPages ? 'disabled' : ''}>Next</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function attachPageEvents() {
+        const app = document.getElementById('app');
+
+        app.querySelectorAll('[data-nav]').forEach((el) => {
+          el.addEventListener('click', () => navigate(el.getAttribute('data-nav')));
+        });
+
+        app.querySelectorAll('[data-action]').forEach((el) => {
+          el.addEventListener('click', () => {
+            const action = el.getAttribute('data-action');
+            const id = el.getAttribute('data-id');
+
+            if (action === 'view-book') navigate('view-book', id);
+            if (action === 'edit-book') navigate('edit-book', id);
+            if (action === 'issue-book') navigate('issue-book', id);
+            if (action === 'return-loan') navigate('return-book', id);
+            if (action === 'delete-book') handleDeleteBook(id);
+          });
+        });
+
+        if (state.route === 'books') {
+          const searchInput = document.getElementById('booksSearchInput');
+          searchInput.addEventListener('input', (e) => {
+            state.booksSearch = e.target.value;
+            state.booksPage = 1;
+            render();
+            const el = document.getElementById('booksSearchInput');
+            if (el) {
+              el.focus();
+              el.setSelectionRange(el.value.length, el.value.length);
+            }
+          });
+
+          document.getElementById('booksCategorySelect').addEventListener('change', (e) => {
+            state.booksCategory = e.target.value;
+            state.booksPage = 1;
+            render();
+          });
+
+          document.getElementById('booksAvailableCheck').addEventListener('change', (e) => {
+            state.booksAvailableOnly = e.target.checked;
+            state.booksPage = 1;
+            render();
+          });
+
+          document.getElementById('booksPrevBtn').addEventListener('click', () => {
+            state.booksPage = Math.max(1, state.booksPage - 1);
+            render();
+          });
+
+          document.getElementById('booksNextBtn').addEventListener('click', () => {
+            state.booksPage += 1;
+            render();
+          });
+        }
+
+        if (state.route === 'add-book' || state.route === 'edit-book') {
+          document.getElementById('bookForm').addEventListener('submit', handleBookSubmit);
+        }
+
+        if (state.route === 'issue-book') {
+          document.getElementById('issueForm').addEventListener('submit', handleIssueSubmit);
+        }
+
+        if (state.route === 'return-book') {
+          document.getElementById('returnForm').addEventListener('submit', handleReturnSubmit);
+        }
+
+        if (state.route === 'loans') {
+          const loanSearchInput = document.getElementById('loansSearchInput');
+          loanSearchInput.addEventListener('input', (e) => {
+            state.loansSearch = e.target.value;
+            state.loansPage = 1;
+            render();
+            const el = document.getElementById('loansSearchInput');
+            if (el) {
+              el.focus();
+              el.setSelectionRange(el.value.length, el.value.length);
+            }
+          });
+
+          document.getElementById('loansStatusSelect').addEventListener('change', (e) => {
+            state.loansStatus = e.target.value;
+            state.loansPage = 1;
+            render();
+          });
+
+          document.getElementById('loansPrevBtn').addEventListener('click', () => {
+            state.loansPage = Math.max(1, state.loansPage - 1);
+            render();
+          });
+
+          document.getElementById('loansNextBtn').addEventListener('click', () => {
+            state.loansPage += 1;
+            render();
+          });
+        }
+      }
+
+      function handleBookSubmit(e) {
+        e.preventDefault();
+        const bookCode = document.getElementById('bookCode').value.trim().toUpperCase();
+        const category = document.getElementById('category').value.trim();
+        const title = document.getElementById('title').value.trim();
+        const author = document.getElementById('author').value.trim();
+        const totalCopiesRaw = document.getElementById('totalCopies').value;
+        const isbn = document.getElementById('isbn').value.trim();
+        const totalCopies = Number(totalCopiesRaw);
+
+        const errors = {};
+        if (!bookCode) errors.bookCode = 'Book Code is required.';
+        if (!category) errors.category = 'Please select a category.';
+        if (!title) errors.title = 'Title is required.';
+        if (!author) errors.author = 'Author is required.';
+        if (!totalCopiesRaw || !Number.isInteger(totalCopies) || totalCopies < 1) {
+          errors.totalCopies = 'Total Copies must be a whole number of at least 1.';
+        }
+
+        ['bookCode', 'category', 'title', 'author', 'totalCopies'].forEach((field) => {
+          document.getElementById(`err-${field}`).textContent = errors[field] || '';
+        });
+
+        if (Object.keys(errors).length > 0) return;
+
+        const books = loadData(STORAGE_KEYS.books);
+        const serverErrBox = document.getElementById('bookFormServerError');
+
+        if (state.route === 'add-book') {
+          if (books.some((b) => b.bookCode === bookCode)) {
+            serverErrBox.innerHTML = `<div class="alert alert-error">A book with code "${escapeHtml(bookCode)}" already exists.</div>`;
+            return;
+          }
+
+          books.unshift({
+            id: generateId(),
+            bookCode,
+            title,
+            author,
+            category,
+            isbn,
+            totalCopies,
+            availableCopies: totalCopies,
+            createdAt: new Date().toISOString()
+          });
+          saveData(STORAGE_KEYS.books, books);
+          state.flashMessage = `Added "${title}".`;
+          state.flashType = 'success';
+          navigate('books', null, false);
+        } else {
+          const idx = books.findIndex((b) => b.id === state.selectedId);
+          if (idx === -1) return;
+
+          const existing = books[idx];
+          const issuedCount = existing.totalCopies - existing.availableCopies;
+          if (totalCopies < issuedCount) {
+            serverErrBox.innerHTML = `<div class="alert alert-error">Total Copies cannot be less than currently issued copies (${issuedCount}).</div>`;
+            return;
+          }
+
+          if (books.some((b) => b.bookCode === bookCode && b.id !== existing.id)) {
+            serverErrBox.innerHTML = `<div class="alert alert-error">A book with code "${escapeHtml(bookCode)}" already exists.</div>`;
+            return;
+          }
+
+          books[idx] = {
+            ...existing,
+            bookCode,
+            title,
+            author,
+            category,
+            isbn,
+            totalCopies,
+            availableCopies: totalCopies - issuedCount
+          };
+          saveData(STORAGE_KEYS.books, books);
+          state.flashMessage = `Updated "${title}".`;
+          state.flashType = 'success';
+          navigate('books', null, false);
+        }
+      }
+
+      function handleDeleteBook(id) {
+        const books = loadData(STORAGE_KEYS.books);
+        const loans = loadData(STORAGE_KEYS.loans);
+        const book = books.find((b) => b.id === id);
+        if (!book) return;
+
+        if (!window.confirm(`Are you sure you want to delete "${book.title}" (${book.bookCode})?`)) {
+          return;
+        }
+
+        const hasActiveLoan = loans.some((l) => l.bookId === id && l.status === 'Issued');
+        if (hasActiveLoan) {
+          state.flashMessage = 'Cannot delete this book because some copies are currently issued.';
+          state.flashType = 'error';
+          render();
+          return;
+        }
+
+        saveData(
+          STORAGE_KEYS.books,
+          books.filter((b) => b.id !== id)
+        );
+        state.flashMessage = `Deleted "${book.title}".`;
+        state.flashType = 'success';
+        render();
+      }
+
+      function handleIssueSubmit(e) {
+        e.preventDefault();
+        const borrowerName = document.getElementById('borrowerName').value.trim();
+        const borrowerId = document.getElementById('borrowerId').value.trim();
+        const borrowerPhone = document.getElementById('borrowerPhone').value.trim();
+        const issueDate = document.getElementById('issueDate').value;
+        const dueDate = document.getElementById('dueDate').value;
+
+        const errors = {};
+        if (!borrowerName) errors.borrowerName = 'Borrower Name is required.';
+        if (!borrowerId) errors.borrowerId = 'Borrower ID is required.';
+        if (!issueDate) errors.issueDate = 'Issue Date is required.';
+        if (!dueDate) {
+          errors.dueDate = 'Due Date is required.';
+        } else if (issueDate && dueDate < issueDate) {
+          errors.dueDate = 'Due Date cannot be earlier than Issue Date.';
+        }
+
+        ['borrowerName', 'borrowerId', 'issueDate', 'dueDate'].forEach((field) => {
+          document.getElementById(`err-${field}`).textContent = errors[field] || '';
+        });
+
+        if (Object.keys(errors).length > 0) return;
+
+        const books = loadData(STORAGE_KEYS.books);
+        const bookIdx = books.findIndex((b) => b.id === state.selectedId);
+        if (bookIdx === -1 || books[bookIdx].availableCopies <= 0) {
+          document.getElementById('issueFormServerError').innerHTML =
+            '<div class="alert alert-error">No copies are currently available for this book.</div>';
+          return;
+        }
+
+        const book = books[bookIdx];
+        books[bookIdx] = { ...book, availableCopies: book.availableCopies - 1 };
+        saveData(STORAGE_KEYS.books, books);
+
+        const loans = loadData(STORAGE_KEYS.loans);
+        loans.unshift({
+          id: generateId(),
+          bookId: book.id,
+          bookCode: book.bookCode,
+          bookTitle: book.title,
+          borrowerName,
+          borrowerId,
+          borrowerPhone,
+          issueDate,
+          dueDate,
+          returnDate: null,
+          status: 'Issued',
+          fineAmount: 0,
+          createdAt: new Date().toISOString()
+        });
+        saveData(STORAGE_KEYS.loans, loans);
+
+        state.flashMessage = `Issued "${book.title}" to ${borrowerName}.`;
+        state.flashType = 'success';
+        navigate('loans', null, false);
+      }
+
+      function handleReturnSubmit(e) {
+        e.preventDefault();
+        const returnDate = document.getElementById('returnDate').value;
+        const fineAmount = Number(document.getElementById('fineAmount').value);
+        const errBox = document.getElementById('returnFormError');
+
+        const loans = loadData(STORAGE_KEYS.loans);
+        const loanIdx = loans.findIndex((l) => l.id === state.selectedId);
+        if (loanIdx === -1 || loans[loanIdx].status === 'Returned') return;
+
+        if (!returnDate) {
+          errBox.innerHTML = '<div class="alert alert-error">Return Date is required.</div>';
+          return;
+        }
+
+        if (returnDate < loans[loanIdx].issueDate) {
+          errBox.innerHTML = '<div class="alert alert-error">Return Date cannot be earlier than Issue Date.</div>';
+          return;
+        }
+
+        if (Number.isNaN(fineAmount) || fineAmount < 0) {
+          errBox.innerHTML = '<div class="alert alert-error">Fine amount must be 0 or greater.</div>';
+          return;
+        }
+
+        loans[loanIdx] = {
+          ...loans[loanIdx],
+          status: 'Returned',
+          returnDate,
+          fineAmount
+        };
+        saveData(STORAGE_KEYS.loans, loans);
+
+        const books = loadData(STORAGE_KEYS.books);
+        const bookIdx = books.findIndex((b) => b.id === loans[loanIdx].bookId);
+        if (bookIdx !== -1) {
+          books[bookIdx] = {
+            ...books[bookIdx],
+            availableCopies: Math.min(books[bookIdx].totalCopies, books[bookIdx].availableCopies + 1)
+          };
+          saveData(STORAGE_KEYS.books, books);
+        }
+
+        state.flashMessage = `Returned "${loans[loanIdx].bookTitle}".`;
+        state.flashType = 'success';
+        navigate('loans', null, false);
+      }
+
+      function render() {
+        updateNavHighlight();
+        const app = document.getElementById('app');
+
+        if (state.route === 'dashboard') app.innerHTML = renderDashboard();
+        else if (state.route === 'books') app.innerHTML = renderBooks();
+        else if (state.route === 'add-book') app.innerHTML = renderBookForm(null);
+        else if (state.route === 'edit-book') {
+          const book = loadData(STORAGE_KEYS.books).find((b) => b.id === state.selectedId);
+          app.innerHTML = book
+            ? renderBookForm(book)
+            : '<div class="alert alert-error">Book not found.</div><button type="button" class="btn btn-secondary" data-nav="books">Back</button>';
+        } else if (state.route === 'view-book') app.innerHTML = renderViewBook();
+        else if (state.route === 'issue-book') app.innerHTML = renderIssueBook();
+        else if (state.route === 'return-book') app.innerHTML = renderReturnBook();
+        else if (state.route === 'loans') app.innerHTML = renderLoanHistory();
+
+        attachPageEvents();
+      }
+
+      document.getElementById('brandLink').addEventListener('click', () => navigate('dashboard'));
+
+      document.getElementById('navToggle').addEventListener('click', () => {
+        const navLinks = document.getElementById('navLinks');
+        const isOpen = navLinks.classList.toggle('open');
+        document.getElementById('navToggle').setAttribute('aria-expanded', String(isOpen));
+      });
+
+      document.querySelectorAll('.nav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => navigate(btn.getAttribute('data-route')));
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
